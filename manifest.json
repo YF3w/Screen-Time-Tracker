@@ -1,0 +1,27 @@
+{
+    "manifest_version": 3,
+    "name": "Screen Time Tracker",
+    "version": "1.0",
+    "description": "Calculating your screen time",
+    "permissions": [
+      "scripting",
+      "activeTab",
+      "storage",
+      "tabs",
+      "alarms"
+    ],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "action": {
+      "default_popup": "popup.html"
+    },
+
+   "icons": {
+    "16": "img/logo-.png",
+    "32": "img/logo-.png",
+    "64": "img/logo-.png",
+   "128": "img/logo-.png"
+  }
+}
+  
