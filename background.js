@@ -51,9 +51,25 @@ function trackTime() {
 }
 
 // Création de l'alarme au démarrage
+/*
 chrome.runtime.onInstalled.addListener(() => {
   chrome.alarms.create("trackScreenTime", { periodInMinutes: 1 / 60 });
+  chrome.storage.local.set({ consentGiven: null });
+
 });
+*/
+
+chrome.runtime.onInstalled.addListener((details) => {
+
+  chrome.alarms.create("trackScreenTime", { periodInMinutes: 1 / 60 });
+  if (details.reason === "install") {
+    chrome.storage.local.set({
+      isFirstInstall: true,
+      consentGiven: null // forcer le consentement à être demandé
+    });
+  }
+});
+
 
 chrome.runtime.onStartup.addListener(() => {
   chrome.alarms.create("trackScreenTime", { periodInMinutes: 1 / 60 });

@@ -47,11 +47,25 @@ for (const [site, seconds] of sitesAAfficher) {
 
 // Gérer le bouton
 document.addEventListener("DOMContentLoaded", () => {
+
+  // Réinitialise l'affichage par défaut à l'ouverture
+  document.getElementById("main-content").style.display = "block";
+
+  const graph = document.getElementById("graphContainer");
+  if (graph) graph.style.display = "none";
+
+  const consent = document.getElementById("consent-container");
+  if (consent) consent.style.display = "none";
+
+  const activer = document.getElementById("activer-container");
+  if (activer) activer.style.display = "none";
+
+  const opt = document.getElementById("opt");
+  if (opt) opt.style.display = "none"; // <-- ajoute cette vérification
   document.getElementById("afficherPlusBtn").addEventListener("click", () => {
     afficherTout = !afficherTout;
     afficherTemps();
   });
-
   afficherTemps(); // Affichage initial
   setInterval(afficherTemps, 1000); // Met à jour toutes les secondes
 
@@ -62,6 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // Vérifie le consentement
+/*
 chrome.storage.local.get("consentGiven", (result) => {
   if (result.consentGiven === true) {
     document.getElementById("main-content").style.display = "block";
@@ -71,20 +86,53 @@ chrome.storage.local.get("consentGiven", (result) => {
     document.getElementById("opt").style.display = "none";
     document.getElementById("graphContainer").style.display = "none";
 
-    afficherTemps();
-    setInterval(afficherTemps, 10000); // mise à jour toutes les 10 sec
+
   } else if (result.consentGiven === false) {
     document.getElementById("main-content").style.display = "none";
     document.getElementById("activer-container").style.display = "block";
+    document.getElementById("consent-container").style.display = "none";
     document.getElementById("btn-x").style.display = "none";
     document.getElementById("opt").style.display = "none";
     document.getElementById("graphContainer").style.display = "none";
-  } else {
+  } else{ 
     // consentement pas encore donné
     document.getElementById("main-content").style.display = "none";
     document.getElementById("consent-container").style.display = "block";
     document.getElementById("activer-container").style.display = "none";
-    document.getElementById("btn-x").style.display = "none";
+    document.getElementById("btn-x").style.display = "block";
+    document.getElementById("opt").style.display = "none";
+    document.getElementById("graphContainer").style.display = "none";
+  }
+});
+*/
+
+chrome.storage.local.get(["consentGiven", "isFirstInstall"], (result) => {
+  console.log("Stockage récupéré :", result);
+  const { consentGiven, isFirstInstall } = result;
+
+  if (isFirstInstall) {
+    // Affiche le conteneur de consentement au premier lancement
+    document.getElementById("consent-container").style.display = "block";
+    document.getElementById("main-content").style.display = "none";
+    document.getElementById("btn-x").style.display = "block";
+    document.getElementById("opt").style.display = "none";
+    document.getElementById("graphContainer").style.display = "none";
+    document.getElementById("activer-container").style.display = "none";
+  } else if (consentGiven === true) {
+    document.getElementById("main-content").style.display = "block";
+    document.getElementById("consent-container").style.display = "none";
+    document.getElementById("btn-x").style.display = "block";
+    document.getElementById("opt").style.display = "none";
+    document.getElementById("graphContainer").style.display = "none";
+    document.getElementById("activer-container").style.display = "none";
+    afficherTemps();
+    setInterval(afficherTemps, 10000);
+  } else {
+    // consentement refusé
+    document.getElementById("main-content").style.display = "none";
+    document.getElementById("consent-container").style.display = "none";
+    document.getElementById("activer-container").style.display = "block";
+    document.getElementById("btn-x").style.display = "block";
     document.getElementById("opt").style.display = "none";
     document.getElementById("graphContainer").style.display = "none";
   }
@@ -92,20 +140,21 @@ chrome.storage.local.get("consentGiven", (result) => {
 
 // Si l'utilisateur accepte
 document.getElementById("accept")?.addEventListener("click", () => {
-  chrome.storage.local.set({ consentGiven: true }, () => {
+  chrome.storage.local.set({ consentGiven: true, isFirstInstall: false }, () => {
     setTimeout(() => {
       location.reload();
-    }, 500); // ← Attend un peu avant de recharger
+    }, 500);
   });
 });
 
 // Si l'utilisateur refuse
 document.getElementById("decline")?.addEventListener("click", () => {
-  chrome.storage.local.set({ consentGiven: false }, () => {
+  chrome.storage.local.set({ consentGiven: false, isFirstInstall: false }, () => {
     location.reload();
   });
 });
 
+// S’il change d’avis plus tard
 document.getElementById("activer")?.addEventListener("click", () => {
   chrome.storage.local.set({ consentGiven: true }, () => {
     setTimeout(() => {
@@ -113,6 +162,9 @@ document.getElementById("activer")?.addEventListener("click", () => {
     }, 500);
   });
 });
+
+
+
 
 
 /***************************Btn-x*******************************/
@@ -281,20 +333,4 @@ suspendreBtn.addEventListener("click", () => {
 });
 
 
-document.addEventListener("DOMContentLoaded", () => {
-  // Réinitialise l'affichage par défaut à l'ouverture
-  document.getElementById("main-content").style.display = "block";
 
-  const graph = document.getElementById("graphContainer");
-  if (graph) graph.style.display = "none";
-
-  const consent = document.getElementById("consent-container");
-  if (consent) consent.style.display = "none";
-
-  const activer = document.getElementById("activer-container");
-  if (activer) activer.style.display = "none";
-
-  const opt = document.getElementById("opt");
-  if (opt) opt.style.display = "none"; // <-- ajoute cette vérification
-  
-});
