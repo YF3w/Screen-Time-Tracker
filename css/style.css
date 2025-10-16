@@ -89,6 +89,15 @@ html {
     right: 20px;
     z-index: 9999;
   }
+  
+/***************************btn-x *******************************/
+  .button-x {
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.button-x:hover {
+  transform: scale(1.1);
+}
 
 /***************************opt container*******************************/
  
